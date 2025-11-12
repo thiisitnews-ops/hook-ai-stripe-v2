@@ -6,9 +6,17 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       server: {
+
         port: 3000,
         host: '0.0.0.0',
-      },
+      },build: {
+  rollupOptions: {
+    input: {
+      main: path.resolve(__dirname, "app.html"),
+    },
+  },
+},
+
       plugins: [react()],
       define: {
         'process.env.API_KEY': JSON.stringify(env.VITE_GEMINI_API_KEY),
