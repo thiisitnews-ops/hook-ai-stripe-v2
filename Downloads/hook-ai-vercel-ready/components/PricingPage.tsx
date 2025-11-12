@@ -1,7 +1,7 @@
-
-import React from 'react';
-import { PRICING_PLANS } from '../constants';
-import { CheckIcon } from './icons';
+import React from "react";
+import { PRICING_PLANS } from "../constants";
+import { CheckIcon } from "./icons";
+import { stripeProducts } from "../utils/stripeProducts";
 
 const PricingPage: React.FC = () => {
   return (
@@ -17,23 +17,31 @@ const PricingPage: React.FC = () => {
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {PRICING_PLANS.map((plan, index) => (
+          {PRICING_PLANS.map((plan) => (
             <div
               key={plan.name}
               className={`rounded-2xl border-2 p-8 flex flex-col transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl ${
-                plan.name === 'Pro' 
-                ? 'border-cyan-500 bg-gray-800 shadow-cyan-500/20' 
-                : 'border-gray-700 bg-gray-800/50'
+                plan.name === "Pro"
+                  ? "border-cyan-500 bg-gray-800 shadow-cyan-500/20"
+                  : "border-gray-700 bg-gray-800/50"
               }`}
             >
               <h3 className="text-2xl font-semibold text-white">{plan.name}</h3>
               <p className="mt-4 text-gray-400">{plan.bestFor}</p>
               <div className="mt-6">
-                <span className="text-5xl font-extrabold text-white">${plan.price}</span>
-                <span className="text-base font-medium text-gray-400">/ month</span>
+                <span className="text-5xl font-extrabold text-white">
+                  ${plan.price}
+                </span>
+                <span className="text-base font-medium text-gray-400">
+                  / month
+                </span>
               </div>
-              <p className="mt-1 text-gray-400 text-sm">{typeof plan.thumbnails === 'number' ? `${plan.thumbnails} thumbnails` : plan.thumbnails}</p>
-              
+              <p className="mt-1 text-gray-400 text-sm">
+                {typeof plan.thumbnails === "number"
+                  ? `${plan.thumbnails} thumbnails`
+                  : plan.thumbnails}
+              </p>
+
               <ul className="mt-8 space-y-4 flex-grow">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start">
@@ -45,14 +53,43 @@ const PricingPage: React.FC = () => {
                 ))}
               </ul>
 
+              {/* Button */}
               <button
+                onClick={() => {
+                  const stripeProduct = stripeProducts.find(
+                    (p) => p.name.toLowerCase() === plan.name.toLowerCase()
+                  );
+
+                  if (!stripeProduct?.priceId) {
+                    alert("No Stripe price found for this plan.");
+                    return;
+                  }
+
+                  fetch("/api/create-checkout-session", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ priceId: stripeProduct.priceId }),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      if (data.url) {
+                        window.location.href = data.url;
+                      } else {
+                        alert("Checkout failed: " + data.error);
+                      }
+                    })
+                    .catch((err) => {
+                      console.error("Stripe checkout error:", err);
+                      alert("Something went wrong. Please try again.");
+                    });
+                }}
                 className={`w-full mt-10 py-3 px-6 rounded-lg font-semibold transition-transform transform hover:scale-105 ${
-                  plan.name === 'Pro' 
-                  ? 'bg-cyan-600 text-white hover:bg-cyan-700' 
-                  : 'bg-gray-700 text-white hover:bg-gray-600'
+                  plan.name === "Pro"
+                    ? "bg-cyan-600 text-white hover:bg-cyan-700"
+                    : "bg-gray-700 text-white hover:bg-gray-600"
                 }`}
               >
-                {plan.cta}
+                Choose Plan
               </button>
             </div>
           ))}

@@ -73,15 +73,33 @@ export function PricingCard({ product, isPopular = false }: PricingCardProps) {
       </CardContent>
       
       <CardFooter>
-        <Button
-          onClick={handleSubscribe}
-          loading={loading}
-          variant={isPopular ? 'primary' : 'outline'}
-          className="w-full"
+        <button
+  onClick={handleCheckout}
+  className="w-full mt-10 py-3 px-6 rounded-lg font-semibold bg-cyan-600 hover:bg-cyan-700 transition-transform transform hover:scale-105 text-white"
+>
+  Choose Plan
+</button>
+
         >
-          Get Started
-        </Button>
-      </CardFooter>
-    </Card>
-  )
-}
+          const handleCheckout = async () => {
+  try {
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ priceId: plan.priceId }), // Pass Stripe Price ID
+    });
+
+    const data = await response.json();
+
+    if (data.url) {
+      window.location.href = data.url; // Redirect to Stripe Checkout
+    } else {
+      alert("Checkout failed: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert("Something went wrong. Please try again later.");
+  }
+};
