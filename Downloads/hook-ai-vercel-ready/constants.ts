@@ -1,23 +1,23 @@
 export const PRICING_PLANS = [
   {
     name: "Starter",
-    bestFor: "Beginners exploring AI tools",
     price: "0",
-    features: ["Basic usage", "Community support"],
-    priceId: "price_BASIC_12345",
+    bestFor: "Individuals testing the app",
+    features: ["Basic tools", "1 project", "Community support"],
+    priceId: "price_1STARTER123", // ← your Stripe Starter price ID
   },
   {
     name: "Pro",
-    bestFor: "Professionals who need more power",
     price: "19",
-    features: ["All Starter features", "Unlimited thumbnails", "Priority support"],
-    priceId: "price_PRO_12345",
+    bestFor: "Creators and small teams",
+    features: ["Advanced tools", "5 projects", "Priority support"],
+    priceId: "price_1PRO12345", // ← your Stripe Pro price ID
   },
   {
     name: "Agency",
-    bestFor: "Teams and agencies",
     price: "49",
-    features: ["Everything in Pro", "Team dashboard", "Client management"],
-    priceId: "price_AGENCY_12345",
+    bestFor: "Businesses and agencies",
+    features: ["All features", "Unlimited projects", "Dedicated support"],
+    priceId: "price_1AGENCY123", // ← your Stripe Agency price ID
   },
 ];

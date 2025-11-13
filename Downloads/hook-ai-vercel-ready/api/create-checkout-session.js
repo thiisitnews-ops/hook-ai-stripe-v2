@@ -1,4 +1,3 @@
-// /api/create-checkout-session.js
 import Stripe from "stripe";
 
 export default async function handler(req, res) {
@@ -8,10 +7,12 @@ export default async function handler(req, res) {
 
   try {
     const { priceId } = req.body;
-    if (!priceId) return res.status(400).json({ error: "Missing priceId" });
+    if (!priceId) {
+      return res.status(400).json({ error: "Missing priceId" });
+    }
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2025-01-27",
+      apiVersion: "2023-10-16",
     });
 
     const session = await stripe.checkout.sessions.create({
@@ -27,9 +28,9 @@ export default async function handler(req, res) {
       cancel_url: `${req.headers.origin}/cancel`,
     });
 
-    res.status(200).json({ url: session.url });
-  } catch (err) {
-    console.error("Stripe Checkout Error:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(200).json({ url: session.url });
+  } catch (error) {
+    console.error("Stripe checkout error:", error.message);
+    return res.status(500).json({ error: error.message });
   }
 }

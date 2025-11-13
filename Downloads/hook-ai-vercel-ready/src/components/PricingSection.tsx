@@ -1,20 +1,11 @@
 import React, { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { useSubscription } from "../hooks/useSubscription";
 import { PRICING_PLANS } from "../constants";
 import { CheckIcon } from "./icons";
 
 export const PricingSection: React.FC = () => {
-  const { user } = useAuth();
-  const { plan } = useSubscription();
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async (priceId: string) => {
-    if (!user) {
-      alert("Please sign in to continue.");
-      return;
-    }
-
     try {
       setLoading(true);
       const res = await fetch("/api/create-checkout-session", {
@@ -27,11 +18,11 @@ export const PricingSection: React.FC = () => {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Unable to start checkout. Please try again.");
+        alert("Checkout failed. Please try again.");
       }
     } catch (err) {
       console.error("Checkout error:", err);
-      alert("An error occurred. Check console for details.");
+      alert("Error starting checkout. See console for details.");
     } finally {
       setLoading(false);
     }
@@ -41,10 +32,10 @@ export const PricingSection: React.FC = () => {
     <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
-          Choose a plan that’s right for you
+          Choose Your Plan
         </h2>
         <p className="mt-4 text-lg text-gray-400">
-          Start for free, upgrade anytime.
+          Start free, then upgrade anytime.
         </p>
       </div>
 
@@ -52,11 +43,7 @@ export const PricingSection: React.FC = () => {
         {PRICING_PLANS.map((plan) => (
           <div
             key={plan.name}
-            className={`rounded-2xl border-2 p-8 bg-gray-800 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${
-              plan.name === "Pro"
-                ? "border-cyan-500 shadow-cyan-500/20"
-                : "border-gray-700"
-            }`}
+            className="rounded-2xl border-2 border-gray-700 bg-gray-800 p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
           >
             <h3 className="text-2xl font-semibold text-white">{plan.name}</h3>
             <p className="mt-2 text-gray-400">{plan.bestFor}</p>
@@ -81,7 +68,7 @@ export const PricingSection: React.FC = () => {
             <button
               onClick={() => handleCheckout(plan.priceId)}
               disabled={loading}
-              className="w-full mt-10 py-3 px-6 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-transform transform hover:scale-105 disabled:opacity-50"
+              className="w-full mt-10 py-3 px-6 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-transform transform hover:scale-105 disabled:opacity-50"
             >
               {loading ? "Loading..." : "Choose Plan"}
             </button>
