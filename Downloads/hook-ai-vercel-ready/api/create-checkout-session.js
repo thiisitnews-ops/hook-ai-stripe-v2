@@ -1,3 +1,4 @@
+// /api/create-checkout-session.js
 import Stripe from "stripe";
 
 export default async function handler(req, res) {
@@ -7,9 +8,7 @@ export default async function handler(req, res) {
 
   try {
     const { priceId } = req.body;
-    if (!priceId) {
-      return res.status(400).json({ error: "Missing priceId" });
-    }
+    if (!priceId) return res.status(400).json({ error: "Missing priceId" });
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2025-01-27",
